@@ -16,9 +16,12 @@ func TestParseAccessLog(t *testing.T) {
 	assert.Len(t, metrics, 1)
 	assert.Equal(t, "access_log", metrics[0].Name())
 	assert.Equal(t, map[string]interface{}{
-		"hostname": "api.feature-2274.test.angejia.com",
-		"method":   "PUT",
-		"path":     "/common/users/actions/login",
+		"hostname":    "api.feature-2274.test.angejia.com",
+		"method":      "PUT",
+		"path":        "/common/users/actions/login",
+		"method":      "PUT",
+		"status_code": 200,
+		"path":        "/common/users/actions/login",
 	}, metrics[0].Fields())
 	assert.Equal(t, map[string]string{}, metrics[0].Tags())
 }
