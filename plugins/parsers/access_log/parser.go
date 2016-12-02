@@ -56,6 +56,12 @@ func parseAccessLog(log string) map[string]interface{} {
 	// Parse Ip Address
 	ip_regexp := regexp.MustCompile("\\s+(25[0-5]|2[0-4]\\d|[0-1]\\d{2}|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|[0-1]\\d{2}|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|[0-1]\\d{2}|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|[0-1]\\d{2}|[1-9]?\\d)\\s+")
 	hosts := ip_regexp.FindAllString(log, 2)
+	client_ip := ""
+	host_ip := ""
+	if len(hosts) > 1 {
+		client_ip = strings.TrimSpace(hosts[0])
+		host_ip = strings.TrimSpace(hosts[1])
+	}
 
 	// Parse Hostname
 	hostname_regexp := regexp.MustCompile("\\s+([a-z0-9]+(-[a-z0-9]+)*\\.)+[a-z]{2,}\\s+")
@@ -69,20 +75,26 @@ func parseAccessLog(log string) map[string]interface{} {
 	status_code_regexp := regexp.MustCompile("\\s+[1-5]{1}[0-9]{2}\\s+")
 	status_code_arr := status_code_regexp.FindAllString(log, 3)
 	status_code := ""
-	if len(status_code_arr) > 1 {
-		status_code = strings.TrimSpace(status_code_arr[1])
-	} else {
-		status_code = strings.TrimSpace(status_code_arr[0])
+	if len(status_code_arr) > 0 {
+		if len(status_code_arr) > 1 {
+			status_code = strings.TrimSpace(status_code_arr[1])
+		} else {
+			status_code = strings.TrimSpace(status_code_arr[0])
+		}
 	}
 	status_code_number, _ := strconv.Atoi(status_code)
 
 	// Parse Request URI
 	uri_regexp := regexp.MustCompile("\\s+(?:\\/([^?#]*))")
-	uri := strings.Split(strings.TrimSpace(uri_regexp.FindString(log)), " ")[0]
+	uri_arr := strings.Split(strings.TrimSpace(uri_regexp.FindString(log)), " ")
+	uri := ""
+	if len(uri_arr) > 0 {
+		uri = uri_arr[0]
+	}
 
 	return map[string]interface{}{
-		"client_ip":   strings.TrimSpace(hosts[0]),
-		"host_ip":     strings.TrimSpace(hosts[1]),
+		"client_ip":   client_ip,
+		"host_ip":     host_ip,
 		"hostname":    hostname,
 		"method":      method,
 		"status_code": status_code_number,
