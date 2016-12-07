@@ -21,6 +21,9 @@ func TestParseAccessLog(t *testing.T) {
 		"path":        "/common/users/actions/login",
 		"method":      "PUT",
 		"status_code": 200,
+		"success_status": 1,
+		"fail_status": 0,
+		"upstream_time": 2328,
 		"path":        "/common/users/actions/login",
 	}, metrics[0].Fields())
 	assert.Equal(t, map[string]string{}, metrics[0].Tags())

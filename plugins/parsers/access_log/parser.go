@@ -72,17 +72,27 @@ func parseAccessLog(log string) map[string]interface{} {
 	method := strings.TrimSpace(method_regexp.FindString(log))
 
 	// Parse Status Code
-	status_code_regexp := regexp.MustCompile("\\s+[1-5]{1}[0-9]{2}\\s+")
+	status_code_regexp := regexp.MustCompile("\\s+\\d+\\s+")
 	status_code_arr := status_code_regexp.FindAllString(log, 3)
 	status_code := ""
+	upstream_time := ""
 	if len(status_code_arr) > 0 {
 		if len(status_code_arr) > 1 {
+			upstream_time = strings.TrimSpace(status_code_arr[0])
 			status_code = strings.TrimSpace(status_code_arr[1])
 		} else {
 			status_code = strings.TrimSpace(status_code_arr[0])
 		}
 	}
 	status_code_number, _ := strconv.Atoi(status_code)
+	upstream_time_number, _ := strconv.Atoi(upstream_time)
+	success_status := 0
+	fail_status := 0
+	if status_code_number >= 400 {
+		fail_status++
+	} else {
+		success_status++
+	}
 
 	// Parse Request URI
 	uri_regexp := regexp.MustCompile("\\s+(?:\\/([^?#]*))")
@@ -98,6 +108,9 @@ func parseAccessLog(log string) map[string]interface{} {
 		"hostname":    hostname,
 		"method":      method,
 		"status_code": status_code_number,
+		"success_status": success_status,
+		"fail_status": fail_status,
+		"upstream_time": upstream_time_number,
 		"path":        uri,
 	}
 }
