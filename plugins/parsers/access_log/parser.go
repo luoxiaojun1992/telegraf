@@ -93,6 +93,10 @@ func parseAccessLog(log string) map[string]interface{} {
 	} else {
 		success_status++
 	}
+	slow_request := 0
+	if upstream_time_number > 2000 {
+		slow_request = 1
+	}
 
 	// Parse Request URI
 	uri_regexp := regexp.MustCompile("\\s+(?:\\/([^?#]*))")
@@ -112,5 +116,6 @@ func parseAccessLog(log string) map[string]interface{} {
 		"fail_status": fail_status,
 		"upstream_time": upstream_time_number,
 		"path":        uri,
+		"slow_request": slow_request,
 	}
 }

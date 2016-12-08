@@ -25,6 +25,7 @@ func TestParseAccessLog(t *testing.T) {
 		"fail_status": 0,
 		"upstream_time": 2328,
 		"path":        "/common/users/actions/login",
+		"slow_request": 1,
 	}, metrics[0].Fields())
 	assert.Equal(t, map[string]string{}, metrics[0].Tags())
 }
